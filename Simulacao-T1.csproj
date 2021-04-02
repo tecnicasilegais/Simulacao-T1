@@ -6,4 +6,8 @@
     <RootNamespace>Simulacao_T1</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SharpYaml" Version="1.6.6" />
+  </ItemGroup>
+
 </Project>
