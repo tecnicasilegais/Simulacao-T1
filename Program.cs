@@ -7,6 +7,7 @@ namespace Simulacao_T1
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            RandNumbers lixo = new RandNumbers(10);
         }
     }
 }
