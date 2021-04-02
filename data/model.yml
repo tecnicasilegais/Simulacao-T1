@@ -2,10 +2,10 @@ arrivals: 3.0
 
 queues: 
 -   servers: 1
-    minArrival: 1.0
-    maxArrival: 5.0
-    minService: 0.08
-    maxService: 1.0
+    minArrival: 2.0
+    maxArrival: 4.0
+    minService: 3.0
+    maxService: 5.0
 
 rndNumbers: 
 - 0.2176
