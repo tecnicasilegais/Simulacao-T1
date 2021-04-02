@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpYaml" Version="1.6.6" />
+    <None Remove="data\model.yml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="data\model.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet" Version="11.0.1" />
   </ItemGroup>
 
 </Project>

@@ -24,43 +24,35 @@
 #  The remainder details in this file is self-explained. Good-luck! :-)
 #  
 #  DO NOT DELETE THE NEXT LINE STARTED BY '!'
-!PARAMETERS
-arrivals: 
-   SENHA: 3.0
+arrivals: 3.0
 
 queues: 
-   SENHA: 
-      servers: 1
-      minArrival: 1.0
-      maxArrival: 5.0
-      minService: 0.08
-      maxService: 1.0
-   ATEND: 
-      servers: 4
-      capacity: 10
-      minService: 5.0
-      maxService: 15.0
-   FINAN: 
-      servers: 3
-      capacity: 10
-      minService: 5.0
-      maxService: 25.0
+-   servers: 1
+    minArrival: 1.0
+    maxArrival: 5.0
+    minService: 0.08
+    maxService: 1.0
 
-network: 
--  source: SENHA
-   target: ATEND
-   probability: 0.8
--  source: SENHA
-   target: FINAN
-   probability: 0.2
--  source: ATEND
-   target: FINAN
-   probability: 0.3
--  source: FINAN
-   target: ATEND
-   probability: 0.5
+rndNumbers: 
+- 0.2176
+- 0.0103
+- 0.1109
+- 0.3456
+- 0.9910
+- 0.2323
+- 0.9211
+- 0.0322
+- 0.1211
+- 0.5131
+- 0.7208
+- 0.9172
+- 0.9922
+- 0.8324
+- 0.5011
+- 0.2931
 
-rndnumbersPerSeed: 100000
+
+rndNumbersPerSeed: 100000
 seeds: 
 - 52
 - 23
