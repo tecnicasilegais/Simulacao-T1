@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 
 namespace Simulacao_T1
-{   
+{
     public class RandNumbers
     {
-        private const int M = Int32.MaxValue;
+        private const int M = int.MaxValue;
         private const int A = 1664525;
         private const int C = 1013904223;
         private double _seed;
@@ -33,7 +33,7 @@ namespace Simulacao_T1
         {
             return ((max - min) * NextDouble()) + min;
         }
-        
+
         public List<double> NextNDoubles(int n, int min, int max)
         {
             var lst = new List<double>();
