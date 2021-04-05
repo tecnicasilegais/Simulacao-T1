@@ -22,9 +22,9 @@ namespace Simulacao_T1
             var sims = new List<Simulation>();
             if (model.Seeds != null) //running using seed
             {
-                for (var i = 0; i < model.Seeds.Count; i++)
+                foreach (var seed in model.Seeds)
                 {
-                    var generator = new RandNumberGenerator(model.Seeds[i]);
+                    var generator = new RandNumberGenerator(seed);
                     sims.Add(new Simulation(model, generator.NextNDecimals(model.RndNumbersPerSeed)));
                 }
             }
