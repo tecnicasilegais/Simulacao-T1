@@ -4,7 +4,12 @@ using System.Text;
 
 namespace Simulacao_T1
 {
-    internal class Event
+    public enum EventType
+    {
+        Arrival,
+        Departure
+    };
+    public class Event
     {
         public int Type { get; set; }
         public double Time { get; set; }
