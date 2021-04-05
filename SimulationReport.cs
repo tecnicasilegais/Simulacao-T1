@@ -20,7 +20,7 @@ namespace Simulacao_T1
             {
                 Queue = _sims[0].Model.Queues[0], //takes first simulation's queue data
                 ElapsedTime = _sims[0].ElapsedTime,
-                Losses =  _sims[0].Losses
+                Losses = _sims[0].Losses
             };
             for (var i = 1; i < _sims.Count; i++) //sums remaning data
             {
@@ -39,7 +39,7 @@ namespace Simulacao_T1
             for (var i = 0; i <= _sd.Queue.Capacity; i++)
             {
 
-                sb.AppendLine($"State {i} Time: {_sd.Queue.QueueStates[i]} Probability: {String.Format("{0:0.00}", (_sd.Queue.QueueStates[i]/_sd.ElapsedTime))} %");
+                sb.AppendLine($"State {i} Time: {_sd.Queue.QueueStates[i]} Probability: {_sd.Queue.QueueStates[i] / _sd.ElapsedTime:0.00} %");
             }
             sb.AppendLine($"Total Time: {_sd.ElapsedTime}");
             sb.AppendLine($"Losses: {_sd.Losses}");
