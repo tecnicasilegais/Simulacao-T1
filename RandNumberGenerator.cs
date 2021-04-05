@@ -43,5 +43,23 @@ namespace Simulacao_T1
             }
             return lst;
         }
+        public LinkedList<Decimal> NextNDecimals(int n)
+        {
+            var lst = new LinkedList<Decimal>();
+            for (var i = 0; i < n; i++)
+            {
+                lst.AddLast(new Decimal(NextDouble()));
+            }
+            return lst;
+        }
+        public LinkedList<Decimal> NextNDecimals(int n, int min, int max)
+        {
+            var lst = new LinkedList<Decimal>();
+            for (var i = 0; i < n; i++)
+            {
+                lst.AddLast(new Decimal(((max - min) * NextDouble()) + min));
+            }
+            return lst;
+        }
     }
 }

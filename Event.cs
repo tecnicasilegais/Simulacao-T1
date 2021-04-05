@@ -12,9 +12,9 @@ namespace Simulacao_T1
     public class Event
     {
         public int Type { get; set; }
-        public double Time { get; set; }
+        public Decimal Time { get; set; }
 
-        public Event(int type, double time)
+        public Event(int type, Decimal time)
         {
             Type = type;
             Time = time;

@@ -50,7 +50,7 @@ namespace Simulacao_T1
         class SimulationData
         {
             public Model.Queue Queue { get; set; }
-            public double ElapsedTime { get; set; }
+            public Decimal ElapsedTime { get; set; }
             public int Losses { get; set; }
         }
     }

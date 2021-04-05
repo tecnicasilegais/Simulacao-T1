@@ -7,9 +7,9 @@ namespace Simulacao_T1
 {
     public class Model
     {
-        public double Arrivals { get; set; }
+        public Decimal Arrivals { get; set; }
         public List<Queue> Queues { get; set; }
-        public LinkedList<double> RndNumbers { get; set; }
+        public LinkedList<Decimal> RndNumbers { get; set; }
         public int RndNumbersPerSeed { get; set; }
         public List<double> Seeds { get; set; }
 
@@ -28,16 +28,16 @@ namespace Simulacao_T1
                     {
                         IsInfinte = false;
                         for (var i = 0; i <= this.capacity; i++)
-                            QueueStates.Add(0.0);
+                            QueueStates.Add(new decimal(0.0));
                     }
                 }
             }
-            public double MinArrival { get; set; }
-            public double MaxArrival { get; set; }
-            public double MinService { get; set; }
-            public double MaxService { get; set; }
+            public Decimal MinArrival { get; set; }
+            public Decimal MaxArrival { get; set; }
+            public Decimal MinService { get; set; }
+            public Decimal MaxService { get; set; }
             public List<Event> EventList = new List<Event>();
-            public List<double> QueueStates = new List<double>();
+            public List<Decimal> QueueStates = new List<Decimal>();
             public bool IsInfinte = true;
             public string Name { get; set; }
         }
@@ -45,7 +45,7 @@ namespace Simulacao_T1
         {
             public string Source { get; set; }
             public string Target { get; set; }
-            public double Probability { get; set; }
+            public Decimal Probability { get; set; }
         }
     }
 }

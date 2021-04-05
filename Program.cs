@@ -12,7 +12,7 @@ namespace Simulacao_T1
     {
         static void Main(string[] args)
         {
-            TextReader file = new StreamReader(@"data\model.yml");
+            TextReader file = new StreamReader(@"data\model2.yml");
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
@@ -25,7 +25,7 @@ namespace Simulacao_T1
                 for (var i = 0; i < model.Seeds.Count; i++)
                 {
                     var generator = new RandNumberGenerator(model.Seeds[i]);
-                    sims.Add(new Simulation(model, generator.NextNDoubles(model.RndNumbersPerSeed)));
+                    sims.Add(new Simulation(model, generator.NextNDecimals(model.RndNumbersPerSeed)));
                 }
             }
             else //using fixed random numbers given in YML

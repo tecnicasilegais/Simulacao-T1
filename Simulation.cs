@@ -6,17 +6,17 @@ namespace Simulacao_T1
 {
     class Simulation
     {
-        private LinkedList<double> _rndNumbers;
+        private LinkedList<Decimal> _rndNumbers;
 
         int _losses = 0;
         int _queuePos = 0;
-        double _elapsedTime = 0;
+        Decimal _elapsedTime = 0;
 
         public void Simulate()
         {
             var _queues = Model.Queues;
             Arrival(Model.Arrivals); //first arrival
-            double lessTime = 0;
+            Decimal lessTime = 0;
             var lessPos = 0;
 
             while (_rndNumbers.Count != 0)
@@ -81,9 +81,9 @@ namespace Simulacao_T1
             }
 
         }
-        void Arrival(double time)
+        void Arrival(Decimal time)
         {
-            double aux = -1;
+            Decimal aux = -1;
             int posFila = _queuePos;
             CountTime(time);
 
@@ -103,9 +103,9 @@ namespace Simulacao_T1
                 ScheduleArrival(aux);
             }
         }
-        void Exit(double time)
+        void Exit(Decimal time)
         {
-            double aux = -1;
+            Decimal aux = -1;
             CountTime(time);
             int posFila = _queuePos;
             _queuePos = posFila - 1;
@@ -118,17 +118,16 @@ namespace Simulacao_T1
             }
         }
 
-        void ScheduleArrival(double aux)
+        void ScheduleArrival(Decimal aux)
         {
-            double result = _elapsedTime
-                    + (((Model.Queues[0].MaxArrival - Model.Queues[0].MinArrival) * aux) + Model.Queues[0].MinArrival);
+            Decimal result = _elapsedTime + (((Model.Queues[0].MaxArrival - Model.Queues[0].MinArrival) * aux) + Model.Queues[0].MinArrival);
             var e = new Event(1, result);
             Model.Queues[0].EventList.Add(e);
         }
 
-        void ScheduleExit(double aux)
+        void ScheduleExit(Decimal aux)
         {
-            double result = _elapsedTime + (((Model.Queues[0].MaxService - Model.Queues[0].MinService) * aux)
+            Decimal result = _elapsedTime + (((Model.Queues[0].MaxService - Model.Queues[0].MinService) * aux)
                     + Model.Queues[0].MinService);
 
             var e = new Event(0, result);
@@ -136,20 +135,20 @@ namespace Simulacao_T1
 
         }
 
-        void CountTime(double time)
+        void CountTime(Decimal time)
         {
 
             int aux = _queuePos;
 
-            double tempoAnterior = _elapsedTime;
+            Decimal tempoAnterior = _elapsedTime;
             _elapsedTime = time;
-            double posTemAux = _elapsedTime - tempoAnterior;
-            double timeAux = Model.Queues[0].QueueStates[aux] + posTemAux;
+            Decimal posTemAux = _elapsedTime - tempoAnterior;
+            Decimal timeAux = Model.Queues[0].QueueStates[aux] + posTemAux;
             Model.Queues[0].QueueStates[aux] = timeAux;
 
         }
 
-        bool ConsumeRandom(ref double aux)
+        bool ConsumeRandom(ref Decimal aux)
         {
             if (_rndNumbers.Count > 0)
             {
@@ -160,7 +159,7 @@ namespace Simulacao_T1
             return false;
         }
 
-        public Simulation(Model model, LinkedList<double> rndNumbers)
+        public Simulation(Model model, LinkedList<Decimal> rndNumbers)
         {
             this.Model = model;
             this._rndNumbers = rndNumbers;
@@ -169,7 +168,7 @@ namespace Simulacao_T1
         public Model Model { get; }
 
         public int Losses => this._losses;
-        public double ElapsedTime => this._elapsedTime;
+        public Decimal ElapsedTime => this._elapsedTime;
     }
 }
 
