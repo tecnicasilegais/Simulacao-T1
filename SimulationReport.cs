@@ -21,7 +21,7 @@ namespace Simulacao_T1
             {
                 Queue = _sims[0].Model.Queues[0], //takes first simulation's queue data
                 ElapsedTime = _sims[0].ElapsedTime,
-                Losses =  _sims[0].Losses
+                Losses = _sims[0].Losses
             };
             for (var i = 1; i < _sims.Count; i++) //sums remaning data
             {
@@ -37,13 +37,13 @@ namespace Simulacao_T1
         public String PrintReport()
         {
             var sb = new StringBuilder();
+            sb.AppendLine($" State\t {"Time",12}{"",8}\t {"Probability",11}");
             for (var i = 0; i <= _sd.Queue.Capacity; i++)
             {
 
-                sb.AppendLine($"State {i} Time: {_sd.Queue.QueueStates[i]} Probability: {String.Format("{0:0.00}", (_sd.Queue.QueueStates[i]/_sd.ElapsedTime))} %");
+                sb.AppendLine($" {i,3}\t {_sd.Queue.QueueStates[i],20:F4}\t {_sd.Queue.QueueStates[i] / _sd.ElapsedTime,9:P}");
             }
-            sb.AppendLine($"Total Time: {_sd.ElapsedTime}");
-            sb.AppendLine($"Total time 2: {_sd.Queue.QueueStates.Sum()}");
+            sb.AppendLine();
             sb.AppendLine($"Losses: {_sd.Losses}");
 
             return sb.ToString();
