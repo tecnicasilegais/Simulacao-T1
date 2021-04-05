@@ -9,7 +9,7 @@ namespace Simulacao_T1
         private LinkedList<Decimal> _rndNumbers;
 
         int _losses = 0;
-        int _queuePos = 0;
+        int _queueState = 0;
         Decimal _elapsedTime = 0;
 
         public void Simulate()
@@ -21,7 +21,7 @@ namespace Simulacao_T1
 
             while (_rndNumbers.Count != 0)
             {
-                if (_queuePos == Model.Queues[0].Capacity)
+                if (_queueState == Model.Queues[0].Capacity && !Model.Queues[0].IsInfinte)
                 {
 
                     lessTime = _queues[0].EventList[0].Time;
@@ -84,13 +84,13 @@ namespace Simulacao_T1
         void Arrival(Decimal time)
         {
             Decimal aux = -1;
-            int posFila = _queuePos;
+            int posFila = _queueState;
             CountTime(time);
 
-            if (_queuePos < Model.Queues[0].Capacity)
+            if (_queueState < Model.Queues[0].Capacity)
             {
-                _queuePos = posFila + 1;
-                if (_queuePos <= Model.Queues[0].Servers)
+                _queueState = posFila + 1;
+                if (_queueState <= Model.Queues[0].Servers)
                 {
                     if (ConsumeRandom(ref aux))
                     {
@@ -107,9 +107,9 @@ namespace Simulacao_T1
         {
             Decimal aux = -1;
             CountTime(time);
-            int posFila = _queuePos;
-            _queuePos = posFila - 1;
-            if (_queuePos >= Model.Queues[0].Servers)
+            int posFila = _queueState;
+            _queueState = posFila - 1;
+            if (_queueState >= Model.Queues[0].Servers)
             {
                 if (ConsumeRandom(ref aux))
                 {
@@ -138,7 +138,7 @@ namespace Simulacao_T1
         void CountTime(Decimal time)
         {
 
-            int aux = _queuePos;
+            int aux = _queueState;
 
             Decimal tempoAnterior = _elapsedTime;
             _elapsedTime = time;

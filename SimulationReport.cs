@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Simulacao_T1
 {
@@ -42,6 +43,7 @@ namespace Simulacao_T1
                 sb.AppendLine($"State {i} Time: {_sd.Queue.QueueStates[i]} Probability: {String.Format("{0:0.00}", (_sd.Queue.QueueStates[i]/_sd.ElapsedTime))} %");
             }
             sb.AppendLine($"Total Time: {_sd.ElapsedTime}");
+            sb.AppendLine($"Total time 2: {_sd.Queue.QueueStates.Sum()}");
             sb.AppendLine($"Losses: {_sd.Losses}");
 
             return sb.ToString();
