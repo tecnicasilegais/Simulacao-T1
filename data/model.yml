@@ -1,7 +1,7 @@
 arrivals: 3.0
 
 queues: 
--   servers: 1
+-   servers: 2
     capacity: 5
     minArrival: 2
     maxArrival: 4
@@ -33,7 +33,7 @@ rndNumbers:
 - 0.5011
 - 0.2931
 
-rndNumbersPerSeed: 100000
+rndNumbersPerSeed: 10
 
 seeds: 
 - 52

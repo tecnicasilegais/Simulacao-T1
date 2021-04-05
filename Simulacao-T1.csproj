@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <None Remove="data\model.yml" />
+    <None Remove="data\model2.yml" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="data\model.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="data\model2.yml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

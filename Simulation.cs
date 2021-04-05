@@ -6,7 +6,7 @@ namespace Simulacao_T1
 {
     class Simulation
     {
-        private List<double> _rndNumbers;
+        private LinkedList<double> _rndNumbers;
 
         int _losses = 0;
         int _queuePos = 0;
@@ -153,14 +153,14 @@ namespace Simulacao_T1
         {
             if (_rndNumbers.Count > 0)
             {
-                aux = _rndNumbers[0];
-                _rndNumbers.RemoveAt(0);
+                aux = _rndNumbers.First.Value;
+                _rndNumbers.RemoveFirst();
                 return true;
             }
             return false;
         }
 
-        public Simulation(Model model, List<double> rndNumbers)
+        public Simulation(Model model, LinkedList<double> rndNumbers)
         {
             this.Model = model;
             this._rndNumbers = rndNumbers;

@@ -12,7 +12,7 @@ namespace Simulacao_T1
     {
         static void Main(string[] args)
         {
-            TextReader file = new StreamReader(@"data\model2.yml");
+            TextReader file = new StreamReader(@"data\model.yml");
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();

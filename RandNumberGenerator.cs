@@ -19,12 +19,12 @@ namespace Simulacao_T1
             return _seed / M;
         }
 
-        public List<double> NextNDoubles(int n)
+        public LinkedList<double> NextNDoubles(int n)
         {
-            var lst = new List<double>();
+            var lst = new LinkedList<double>();
             for (var i = 0; i < n; i++)
             {
-                lst.Add(NextDouble());
+                lst.AddLast(NextDouble());
             }
             return lst;
         }
@@ -34,12 +34,12 @@ namespace Simulacao_T1
             return ((max - min) * NextDouble()) + min;
         }
 
-        public List<double> NextNDoubles(int n, int min, int max)
+        public LinkedList<double> NextNDoubles(int n, int min, int max)
         {
-            var lst = new List<double>();
+            var lst = new LinkedList<double>();
             for (var i = 0; i < n; i++)
             {
-                lst.Add(((max - min) * NextDouble()) + min);
+                lst.AddLast(((max - min) * NextDouble()) + min);
             }
             return lst;
         }
