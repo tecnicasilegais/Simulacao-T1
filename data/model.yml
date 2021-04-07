@@ -1,7 +1,6 @@
-arrivals: 3.0
-
 queues: 
--   servers: 1
+-   servers: 2
+    arrival: 3.0
     capacity: 5
     minArrival: 2
     maxArrival: 4

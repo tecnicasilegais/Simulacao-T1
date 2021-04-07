@@ -1,79 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Text;
 
 namespace Simulacao_T1
 {
     class Simulation
     {
-        private LinkedList<Decimal> _rndNumbers;
+        private LinkedList<double> _rndNumbers;
 
         int _losses = 0;
         int _queueState = 0;
-        Decimal _elapsedTime = 0;
+        double _elapsedTime = 0;
+        private Queue _queue;
 
         public void Simulate()
         {
-            var _queues = Model.Queues;
-            Arrival(Model.Arrivals); //first arrival
-            Decimal lessTime = 0;
+            Arrival(_queue.Arrival); //first arrival
+            double lessTime = 0;
             var lessPos = 0;
 
             while (_rndNumbers.Count != 0)
             {
-                if (_queueState == Model.Queues[0].Capacity && !Model.Queues[0].IsInfinte)
+                if (_queueState == _queue.Capacity && !_queue.IsInfinite)
                 {
 
-                    lessTime = _queues[0].EventList[0].Time;
+                    lessTime = _queue.EventList[0].Time;
                     lessPos = 0;
-                    for (var i = 0; i < _queues[0].EventList.Count; i++)
+                    for (var i = 0; i < _queue.EventList.Count; i++)
                     {
-                        if (_queues[0].EventList[lessPos].Time > _queues[0].EventList[i].Time)
+                        if (_queue.EventList[lessPos].Time > _queue.EventList[i].Time)
                         {
-                            lessTime = _queues[0].EventList[i].Time;
+                            lessTime = _queue.EventList[i].Time;
                             lessPos = i;
                         }
                     }
 
-                    if (_queues[0].EventList[lessPos].Type == 1)
+                    if (_queue.EventList[lessPos].Type == EventType.Arrival)
                     {
                         _losses++;
 
-                        _queues[0].EventList.RemoveAt(lessPos);
+                        _queue.EventList.RemoveAt(lessPos);
                         Arrival(lessTime);
                     }
                     else
                     {
                         Exit(lessTime);
-                        _queues[0].EventList.RemoveAt(lessPos);
+                        _queue.EventList.RemoveAt(lessPos);
                     }
 
                 }
                 else
                 {
-                    lessTime = _queues[0].EventList[0].Time;
+                    lessTime = _queue.EventList[0].Time;
                     lessPos = 0;
-                    for (var i = 0; i < _queues[0].EventList.Count; i++)
+                    for (var i = 0; i < _queue.EventList.Count; i++)
                     {
-                        if (_queues[0].EventList[lessPos].Time > _queues[0].EventList[i].Time)
+                        if (_queue.EventList[lessPos].Time > _queue.EventList[i].Time)
                         {
-                            lessTime = _queues[0].EventList[i].Time;
+                            lessTime = _queue.EventList[i].Time;
                             lessPos = i;
                         }
 
                     }
 
-                    if (_queues[0].EventList[lessPos].Type == 1)
+                    if (_queue.EventList[lessPos].Type == EventType.Arrival)
                     {
 
                         Arrival(lessTime);
-                        _queues[0].EventList.RemoveAt(lessPos);
+                        _queue.EventList.RemoveAt(lessPos);
 
                     }
-                    else if (_queues[0].EventList[lessPos].Type == 0)
+                    else if (_queue.EventList[lessPos].Type == EventType.Departure)
                     {
                         Exit(lessTime);
-                        _queues[0].EventList.RemoveAt(lessPos);
+                        _queue.EventList.RemoveAt(lessPos);
                     }
                     lessTime = 0;
                     lessPos = 0;
@@ -81,16 +82,16 @@ namespace Simulacao_T1
             }
 
         }
-        void Arrival(Decimal time)
+        void Arrival(double time)
         {
-            Decimal aux = -1;
+            double aux = -1;
             int posFila = _queueState;
             CountTime(time);
 
-            if (_queueState < Model.Queues[0].Capacity)
+            if (_queueState < _queue.Capacity)
             {
                 _queueState = posFila + 1;
-                if (_queueState <= Model.Queues[0].Servers)
+                if (_queueState <= _queue.Servers)
                 {
                     if (ConsumeRandom(ref aux))
                     {
@@ -103,13 +104,13 @@ namespace Simulacao_T1
                 ScheduleArrival(aux);
             }
         }
-        void Exit(Decimal time)
+        void Exit(double time)
         {
-            Decimal aux = -1;
+            double aux = -1;
             CountTime(time);
             int posFila = _queueState;
             _queueState = posFila - 1;
-            if (_queueState >= Model.Queues[0].Servers)
+            if (_queueState >= _queue.Servers)
             {
                 if (ConsumeRandom(ref aux))
                 {
@@ -118,37 +119,35 @@ namespace Simulacao_T1
             }
         }
 
-        void ScheduleArrival(Decimal aux)
+        void ScheduleArrival(double aux)
         {
-            Decimal result = _elapsedTime + (((Model.Queues[0].MaxArrival - Model.Queues[0].MinArrival) * aux) + Model.Queues[0].MinArrival);
-            var e = new Event(1, result);
-            Model.Queues[0].EventList.Add(e);
+            double result = _elapsedTime + (((_queue.MaxArrival - _queue.MinArrival) * aux) + _queue.MinArrival);
+            var e = new Event(EventType.Arrival, result);
+            _queue.EventList.Add(e);
         }
 
-        void ScheduleExit(Decimal aux)
+        void ScheduleExit(double aux)
         {
-            Decimal result = _elapsedTime + (((Model.Queues[0].MaxService - Model.Queues[0].MinService) * aux)
-                    + Model.Queues[0].MinService);
+            double result = _elapsedTime + (((_queue.MaxService - _queue.MinService) * aux)
+                    + _queue.MinService);
 
-            var e = new Event(0, result);
-            Model.Queues[0].EventList.Add(e);
+            var e = new Event(EventType.Departure, result);
+            _queue.EventList.Add(e);
 
         }
 
-        void CountTime(Decimal time)
+        void CountTime(double time)
         {
 
             int aux = _queueState;
 
-            Decimal tempoAnterior = _elapsedTime;
+            double tempoAnterior = _elapsedTime;
             _elapsedTime = time;
-            Decimal posTemAux = _elapsedTime - tempoAnterior;
-            Decimal timeAux = Model.Queues[0].QueueStates[aux] + posTemAux;
-            Model.Queues[0].QueueStates[aux] = timeAux;
-
+            double posTemAux = _elapsedTime - tempoAnterior;
+            _queue.IncrStateTime(aux, posTemAux);
         }
 
-        bool ConsumeRandom(ref Decimal aux)
+        bool ConsumeRandom(ref double aux)
         {
             if (_rndNumbers.Count > 0)
             {
@@ -159,16 +158,16 @@ namespace Simulacao_T1
             return false;
         }
 
-        public Simulation(Model model, LinkedList<Decimal> rndNumbers)
+        public Simulation(Queue queue, LinkedList<double> rndNumbers)
         {
-            this.Model = model;
+            this._queue = queue;
             this._rndNumbers = rndNumbers;
         }
 
-        public Model Model { get; }
+        public Queue Queue => this._queue;
 
         public int Losses => this._losses;
-        public Decimal ElapsedTime => this._elapsedTime;
+        public double ElapsedTime => this._elapsedTime;
     }
 }
 

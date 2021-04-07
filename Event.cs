@@ -9,15 +9,23 @@ namespace Simulacao_T1
         Arrival,
         Departure
     };
-    public class Event
+    public class Event : IComparable<Event>
     {
-        public int Type { get; set; }
-        public Decimal Time { get; set; }
+        public double Time { get; set; }
+        public EventType Type { get; set; }
 
-        public Event(int type, Decimal time)
+        public Event(EventType type, double time)
         {
             Type = type;
             Time = time;
         }
+
+        public int CompareTo(Event other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return Time.CompareTo(other.Time);
+        }
+        
     }
 }

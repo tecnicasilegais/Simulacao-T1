@@ -7,7 +7,7 @@ namespace Simulacao_T1
 {
     class SimulationReport
     {
-        private List<Simulation> _sims;
+        private readonly List<Simulation> _sims;
         private SimulationData _sd;
         public SimulationReport(List<Simulation> sims)
         {
@@ -19,19 +19,19 @@ namespace Simulacao_T1
         {
             _sd = new SimulationData()
             {
-                Queue = _sims[0].Model.Queues[0], //takes first simulation's queue data
-                ElapsedTime = _sims[0].ElapsedTime,
-                Losses = _sims[0].Losses
+                Queue = _sims[0].Queue, //takes first simulation's queue data
             };
             for (var i = 1; i < _sims.Count; i++) //sums remaning data
             {
-                _sd.ElapsedTime += _sims[i].ElapsedTime;
-                _sd.Losses += _sims[i].Losses;
-                for (var j = 0; j < _sims[i].Model.Queues[0].QueueStates.Count; j++)
+                //_sd.ElapsedTime += _sims[i].ElapsedTime;
+                for (var j = 0; j < _sims[i].Queue.StateStats.Count; j++)
                 {
-                    _sd.Queue.QueueStates[j] += _sims[i].Model.Queues[0].QueueStates[j];
+                    _sd.Queue.IncrStateTime(j,_sims[i].Queue.GetStateTime(j));
                 }
             }
+            
+            _sd.Losses = _sims.Sum(s => s.Losses);
+            _sd.ElapsedTime = _sd.Queue.StateStats.Sum();
         }
 
         public String PrintReport()
@@ -41,7 +41,7 @@ namespace Simulacao_T1
             for (var i = 0; i <= _sd.Queue.Capacity; i++)
             {
 
-                sb.AppendLine($" {i,3}\t {_sd.Queue.QueueStates[i],20:F4}\t {_sd.Queue.QueueStates[i] / _sd.ElapsedTime,9:P}");
+                sb.AppendLine($" {i,3}\t {_sd.Queue.GetStateTime(i),20:F4}\t {_sd.Queue.GetStateTime(i) / _sd.ElapsedTime,9:P}");
             }
             sb.AppendLine();
             sb.AppendLine($"Losses: {_sd.Losses}");
@@ -51,8 +51,8 @@ namespace Simulacao_T1
 
         class SimulationData
         {
-            public Model.Queue Queue { get; set; }
-            public Decimal ElapsedTime { get; set; }
+            public Queue Queue { get; set; }
+            public double ElapsedTime { get; set; }
             public int Losses { get; set; }
         }
     }
