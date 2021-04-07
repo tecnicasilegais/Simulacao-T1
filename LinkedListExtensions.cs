@@ -13,7 +13,7 @@ namespace Simulacao_T1
             }
         }
 
-        public static void SortedInsertion(this LinkedList<T> list, T value)
+        public static void SortedInsertion<T>(this LinkedList<Event> list, Event value)
         {
             foreach (var node in list.Reverse())
             {
