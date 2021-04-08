@@ -12,7 +12,12 @@ namespace Simulacao_T1
     {
         static void Main(string[] args)
         {
-            TextReader file = new StreamReader(@"data/model.yml");
+            if (args.Length <= 0)
+            {
+                Console.WriteLine("Indicate file to test, must be in data folder");
+                Console.WriteLine("Call example: Simulator.exe model.yml");
+            }
+            TextReader file = new StreamReader($"data/{args[0]}");
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
@@ -37,6 +42,7 @@ namespace Simulacao_T1
             foreach(var sim in sims)
             {
                 sim.Simulate();
+                model.Queues[0].Restart();
             }
 
             var report = new SimulationReport(sims);

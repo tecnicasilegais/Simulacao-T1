@@ -7,6 +7,15 @@ queues:
     minService: 3
     maxService: 5
 
+rndNumbersPerSeed: 100000
+
+seeds: 
+- 52
+- 23
+- 78
+- 10
+- 5
+
 rndNumbers: 
 - 0.3276
 - 0.8851
@@ -31,12 +40,3 @@ rndNumbers:
 - 0.8324
 - 0.5011
 - 0.2931
-
-rndNumbersPerSeed: 100000
-
-seeds: 
-- 52
-- 23
-- 78
-- 10
-- 5

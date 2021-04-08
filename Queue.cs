@@ -17,22 +17,25 @@ namespace Simulacao_T1
             set
             {
                 this._capacity = value;
-                if (value > 0)
-                {
-                    IsInfinite = false;
-                    for (var i = 0; i <= this._capacity; i++)
-                        StateStats.Add(0);
-                }
+                if (value <= 0) return;
+                IsInfinite = false;
+                for (var i = 0; i <= this._capacity; i++)
+                    StateStats.Add(0);
             }
         }
         public double MinArrival { get; set; }
         public double MaxArrival { get; set; }
         public double MinService { get; set; }
         public double MaxService { get; set; }
-        public readonly List<Event> EventList = new();
-        public readonly List<double> StateStats = new();
+        public  LinkedList<Event> EventList = new();
+        public  readonly List<double> StateStats = new();
         public bool IsInfinite = true;
         public string Name { get; set; }
+
+        public void Restart()
+        {
+            this.EventList = new();
+        }
 
         public void IncrStateTime(int index, double time)
         {

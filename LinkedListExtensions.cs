@@ -13,16 +13,18 @@ namespace Simulacao_T1
             }
         }
 
-        public static void SortedInsertion<T>(this LinkedList<Event> list, Event value)
+        public static void SortedInsertion(this LinkedList<Event> list, Event value)
         {
             foreach (var node in list.Reverse())
             {
-                //if inserted value is bigger than current node value, inserts after it
+                    //if inserted value is bigger than current node value, inserts after it
                 if (value.CompareTo(node.Value) >= 0)
                 {
                     list.AddAfter(node, value);
+                    return;
                 }
             }
+            list.AddFirst(value);
         }
     }
 }

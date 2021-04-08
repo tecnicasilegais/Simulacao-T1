@@ -37,6 +37,10 @@ namespace Simulacao_T1
         public String PrintReport()
         {
             var sb = new StringBuilder();
+            sb.Append($"Queue: G/G/{_sd.Queue.Servers}");
+            if (!_sd.Queue.IsInfinite) { sb.AppendLine($"/{_sd.Queue.Capacity}");}
+
+            sb.AppendLine("\n");
             sb.AppendLine($" State\t {"Time",12}{"",8}\t {"Probability",11}");
             for (var i = 0; i <= _sd.Queue.Capacity; i++)
             {
@@ -45,6 +49,7 @@ namespace Simulacao_T1
             }
             sb.AppendLine();
             sb.AppendLine($"Losses: {_sd.Losses}");
+            sb.AppendLine($"Simulation Time: {_sd.ElapsedTime:F4}");
 
             return sb.ToString();
         }

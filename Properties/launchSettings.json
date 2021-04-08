@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Simulacao-T1": {
+      "commandName": "Project",
+      "commandLineArgs": "model2.yml"
+    }
+  }
+}
