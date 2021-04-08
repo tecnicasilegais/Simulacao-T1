@@ -26,10 +26,10 @@ namespace Simulacao_T1
                 //_sd.ElapsedTime += _sims[i].ElapsedTime;
                 for (var j = 0; j < _sims[i].Queue.StateStats.Count; j++)
                 {
-                    _sd.Queue.IncrStateTime(j,_sims[i].Queue.GetStateTime(j));
+                    _sd.Queue.IncrStateTime(j, _sims[i].Queue.GetStateTime(j));
                 }
             }
-            
+
             _sd.Losses = _sims.Sum(s => s.Losses);
             _sd.ElapsedTime = _sd.Queue.StateStats.Sum();
         }
@@ -38,18 +38,19 @@ namespace Simulacao_T1
         {
             var sb = new StringBuilder();
             sb.Append($"Queue: G/G/{_sd.Queue.Servers}");
-            if (!_sd.Queue.IsInfinite) { sb.AppendLine($"/{_sd.Queue.Capacity}");}
+            if (!_sd.Queue.IsInfinite) { sb.AppendLine($"/{_sd.Queue.Capacity}"); }
 
-            sb.AppendLine("\n");
-            sb.AppendLine($" State\t {"Time",12}{"",8}\t {"Probability",11}");
+            sb.AppendLine();
+            sb.AppendLine($" State | {"Time",12}{"",8} | {"Probability",11}");
+            sb.AppendLine($" {"".PadLeft(5, '-')} | {"".PadLeft(20, '-')} | {"".PadLeft(11, '-')}");
             for (var i = 0; i <= _sd.Queue.Capacity; i++)
             {
 
-                sb.AppendLine($" {i,3}\t {_sd.Queue.GetStateTime(i),20:F4}\t {_sd.Queue.GetStateTime(i) / _sd.ElapsedTime,9:P}");
+                sb.AppendLine($" {i,3}{"",2} | {_sd.Queue.GetStateTime(i),20:F4} | {_sd.Queue.GetStateTime(i) / _sd.ElapsedTime,9:P}");
             }
             sb.AppendLine();
-            sb.AppendLine($"Losses: {_sd.Losses}");
-            sb.AppendLine($"Simulation Time: {_sd.ElapsedTime:F4}");
+            sb.AppendLine($"{"Losses:",-20}{_sd.Losses}");
+            sb.AppendLine($"{"Simulation Time:",-20}{_sd.ElapsedTime:F4}");
 
             return sb.ToString();
         }
