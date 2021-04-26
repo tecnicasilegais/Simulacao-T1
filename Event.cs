@@ -14,6 +14,7 @@ namespace Simulacao_T1
         public double Time { get; set; }
         public EventType Type { get; set; }
 
+
         public Event(EventType type, double time)
         {
             Type = type;

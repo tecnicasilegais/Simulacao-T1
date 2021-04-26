@@ -31,10 +31,13 @@ namespace Simulacao_T1
         public  readonly List<double> StateStats = new();
         public bool IsInfinite = true;
         public string Name { get; set; }
+        
+        public Network Connection { get; set; }
 
         public void Restart()
         {
             this.EventList = new();
+            this.State = 0;
         }
 
         public void IncrStateTime(int index, double time)
@@ -58,5 +61,10 @@ namespace Simulacao_T1
         {
             return StateStats.Count > index ? StateStats[index] : 0;
         }
+    }
+    public class Network
+    {
+        public string Target { get; set; }
+        public double Probability { get; set; }
     }
 }
