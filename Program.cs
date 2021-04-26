@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using YamlDotNet.Serialization;
@@ -23,29 +24,28 @@ namespace Simulacao_T1
                 .Build();
 
             var model = deserializer.Deserialize<Model>(file);
-
             var sims = new List<Simulation>();
             if (model.Seeds != null) //running using seed
             {
                 foreach (var seed in model.Seeds)
                 {
                     var generator = new RandNumberGenerator(seed);
-                    sims.Add(new Simulation(model.Queues[0], generator.NextNDoubles(model.RndNumbersPerSeed)));
+                    sims.Add(new Simulation(model.Queues, generator.NextNDoubles(model.RndNumbersPerSeed)));
                 }
             }
             else //using fixed random numbers given in YML
             {
-                var sim = new Simulation(model.Queues[0], model.RndNumbers);
+                var sim = new Simulation(model.Queues, model.RndNumbers);
                 sims.Add(sim);
             }
 
             foreach(var sim in sims)
             {
                 sim.Simulate();
-                model.Queues[0].Restart();
+                model.Queues.AsParallel().ForAll( q => q.Value.Restart());
             }
 
-            var report = new SimulationReport(sims);
+            var report = new SimulationReport(model.Queues);
 
             Console.WriteLine(report.PrintReport());
         }

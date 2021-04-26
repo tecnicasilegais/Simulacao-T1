@@ -13,12 +13,23 @@ namespace Simulacao_T1
     {
         public double Time { get; set; }
         public EventType Type { get; set; }
-
+        
+        public string Source { get; set; }
+        
+        public string Target { get; set; }
 
         public Event(EventType type, double time)
         {
             Type = type;
             Time = time;
+        }
+        
+        public Event(EventType type, double time, string target, string source)
+        {
+            Type = type;
+            Time = time;
+            Target = target;
+            Source = source;
         }
 
         public int CompareTo(Event other)

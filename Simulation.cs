@@ -1,138 +1,154 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Tracing;
+using System.Linq;
 using System.Text;
 using System.Threading.Channels;
+using YamlDotNet.Serialization;
 
 namespace Simulacao_T1
 {
-    class Simulation
+    internal class Simulation
     {
         private LinkedList<double> _rndNumbers;
 
-        int _losses = 0;
-        int _queueState = 0;
-        double _elapsedTime = 0;
-        private Queue _queue;
+        private double _elapsedTime;
+        private readonly Dictionary<string, Queue> _queues;
+        private readonly LinkedList<Event> _eventList;
+        public Simulation(Dictionary<string, Queue> queues, LinkedList<double> rndNumbers)
+        {
+            this._queues = queues;
+            this._rndNumbers = rndNumbers;
+            this._elapsedTime = 0;
+            this._eventList = new LinkedList<Event>();
+            this.Initialize();
+        }
 
+        private void Initialize()
+        {
+            _queues.Where(q => q.Value.HasOutsideArrival)
+                .AsParallel().ForAll(q => ScheduleFirstArrival(q.Key, q.Value.Arrival));
+            void ScheduleFirstArrival(string target, double time)
+            {
+                var e = new Event(EventType.Arrival, time, target, null);
+                _eventList.SortedInsertion(e);
+            }
+        }
+        
         public void Simulate()
         {
-            ScheduleFirstArrival(_queue.Arrival); //first arrival
 
             while (_rndNumbers.Count != 0)
             {
                 try
                 {
-                    var currEvent = _queue.EventList.First.Value;
+                    var currEvent = _eventList.First.Value;
 
-                    if (_queueState == _queue.Capacity && !_queue.IsInfinite) //Queue is at maximum capacity
+                    switch (currEvent.Type)
                     {
-
-                        if(currEvent.Type == EventType.Arrival)//Someone is coming to the queue
+                        case EventType.Arrival:
                         {
-                            _losses++;
-
-                            _queue.EventList.RemoveFirst();
-                            Arrival(currEvent.Time);
+                            var tarQueue = _queues[currEvent.Target];
+                            _eventList.RemoveFirst();
+                            Arrival(currEvent.Source, new(currEvent.Target, tarQueue), currEvent.Time);
+                            break;
                         }
-                        else
+                        case EventType.Departure: // TODO arrival when it comes from another queue
                         {
-                            Exit(currEvent.Time);
-                            _queue.EventList.RemoveFirst();
+                            var srcQueue = _queues[currEvent.Source];
+                            Exit(new(currEvent.Source, srcQueue), currEvent.Time);
+                            if (currEvent.Target != null)
+                            {
+                                Arrival(currEvent.Source, new(currEvent.Target, _queues[currEvent.Target]), currEvent.Time);
+                            }
+                            _eventList.RemoveFirst();
+                            break;
                         }
-
-                    }
-                    else
-                    {
-                        if (currEvent.Type == EventType.Arrival)
-                        {
-
-                            Arrival(currEvent.Time);
-                            _queue.EventList.RemoveFirst();
-
-                        }
-                        else if (currEvent.Type == EventType.Departure)
-                        {
-                            Exit(currEvent.Time);
-                            _queue.EventList.RemoveFirst();
-                        }
+                        default:
+                            Console.WriteLine("Something unexpected happened in the EventList");
+                            Environment.Exit(2);
+                            break;
                     }
                 }
                 catch (NullReferenceException e)
                 {
-                    Console.WriteLine("Empty Event List");
-                    return;
+                    Console.WriteLine("The initial arrivals must be declared!");
+                    Environment.Exit(1);
                 }
             }
 
         }
-        void Arrival(double time)
+
+        private void Arrival(string qSource, Tuple<string,Queue> queue, double time)
         {
-            CountTime(time);
+            var (qName, q) = queue;
+            CountTime(q, time);
             double aux = -1;
 
-            if (_queueState < _queue.Capacity)
+            if (!q.HasSpace()){q.Losses++;} // :( queue is full...
+            else
             {
-                _queueState++;
-                if (_queueState <= _queue.Servers)
+                q.State++;
+                if (q.State <= q.Servers)
                 {
                     if (ConsumeRandom(ref aux))
                     {
-                        ScheduleExit(aux);
+                        var qt = GetTarget(q);
+                        ScheduleExit(queue, qt?.Item1, aux);
                     }
                 }
             }
+
+            if (qSource != null) return;
             if (ConsumeRandom(ref aux))
             {
-                ScheduleArrival(aux);
+                ScheduleArrival(null, queue, aux);
             }
         }
-        void Exit(double time)
+
+        private void Exit(Tuple<string,Queue> queue, double time)
         {
-            CountTime(time);
+            var (qName, q) = queue;
+            CountTime(q, time); 
             double aux = -1;
-            _queueState--;
-            if (_queueState >= _queue.Servers)
+            q.State--;
+            if (q.State >= q.Servers)
             {
                 if (ConsumeRandom(ref aux))
                 {
-                    ScheduleExit(aux);
+                    var qt = GetTarget(q);
+                    ScheduleExit(queue, qt?.Item1, aux);
                 }
             }
         }
 
-        void ScheduleArrival(double aux)
+        private void ScheduleArrival(string qSource, Tuple<string,Queue> queue, double aux)
         {
-            double result = _elapsedTime + (((_queue.MaxArrival - _queue.MinArrival) * aux) + _queue.MinArrival);
-            var e = new Event(EventType.Arrival, result);
-            _queue.EventList.SortedInsertion(e);
+            var (qName, q) = queue;
+            double result = _elapsedTime + ToInterval(q.MaxArrival, q.MinArrival, aux);
+            var e = new Event(EventType.Arrival, result, qName, qSource);
+            _eventList.SortedInsertion(e);
         }
 
-        void ScheduleFirstArrival(double time)
+        void ScheduleExit(Tuple<string, Queue> qSource, string qTarget, double aux)
         {
-            var e = new Event(EventType.Arrival, time);
-            _queue.EventList.SortedInsertion(e);
+            var (qName, q) = qSource;
+            double result = _elapsedTime + ToInterval(q.MaxService, q.MinService, aux);
+
+            var e = new Event(EventType.Departure, result, qTarget, qName);
+            _eventList.SortedInsertion(e);
         }
 
-        void ScheduleExit(double aux)
-        {
-            double result = _elapsedTime + (((_queue.MaxService - _queue.MinService) * aux)
-                    + _queue.MinService);
-
-            var e = new Event(EventType.Departure, result);
-            _queue.EventList.SortedInsertion(e);
-
-        }
-
-        void CountTime(double time)
+        private void CountTime(Queue q, double time)
         {
 
-            int aux = _queueState;
+            int aux = q.State;
 
             double tempoAnterior = _elapsedTime;
             _elapsedTime = time;
             double posTemAux = _elapsedTime - tempoAnterior;
-            _queue.IncrStateTime(aux, posTemAux);
+            q.IncrStateTime(aux, posTemAux);
         }
 
         bool ConsumeRandom(ref double aux)
@@ -146,16 +162,20 @@ namespace Simulacao_T1
             return false;
         }
 
-        public Simulation(Queue queue, LinkedList<double> rndNumbers)
+        private static double ToInterval(double max, double min, double aux)
         {
-            this._queue = queue;
-            this._rndNumbers = rndNumbers;
+            return (max - min) * aux + min;
         }
 
-        public Queue Queue => this._queue;
-
-        public int Losses => this._losses;
-        public double ElapsedTime => this._elapsedTime;
+        private Tuple<string,Queue> GetTarget(Queue q)
+        {
+            if (q.Connection == null)
+            {
+                return null;
+            }
+            var tName = q.Connection.Target;
+            return tName != null ? new Tuple<string, Queue>(tName, _queues[tName]) : null;
+        }
     }
 }
 

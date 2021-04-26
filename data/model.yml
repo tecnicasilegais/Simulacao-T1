@@ -1,20 +1,20 @@
 queues: 
--   servers: 2
-    arrival: 3.0
-    capacity: 5
-    minArrival: 2
-    maxArrival: 4
-    minService: 3
-    maxService: 5
+    Q0:
+        servers: 2
+        arrival: 3
+        capacity: 5
+        minArrival: 2
+        maxArrival: 4
+        minService: 3
+        maxService: 5
+#rndNumbersPerSeed: 100000
 
-rndNumbersPerSeed: 100000
-
-seeds: 
-- 52
-- 23
-- 78
-- 10
-- 5
+#seeds: 
+#- 52
+#- 23
+#- 78
+#- 10
+#- 5
 
 rndNumbers: 
 - 0.3276

@@ -1,24 +1,20 @@
 queues: 
--   servers: 2
-    arrival: 3.0
-    capacity: 5
-    minArrival: 2
-    maxArrival: 4
-    minService: 3
-    maxService: 5
-    name: Q0
-    connection:
-        target: Q1
-        probability: 1.0
-
-rndNumbersPerSeed: 100000
-
-seeds: 
-- 52
-- 23
-- 78
-- 10
-- 5
+    Q0:
+        servers: 2
+        arrival: 2.5
+        capacity: 3
+        minArrival: 2
+        maxArrival: 3
+        minService: 2
+        maxService: 5
+        connection:
+            target: Q1
+            probability: 1.0
+    Q1:
+        servers: 1
+        capacity: 3
+        minService: 3
+        maxService: 5
 
 rndNumbers: 
 - 0.3276

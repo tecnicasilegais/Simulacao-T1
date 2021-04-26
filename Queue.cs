@@ -7,10 +7,20 @@ namespace Simulacao_T1
     public class Queue
     {
         private int _capacity;
-        public double Arrival { get; set; }        
+        private double _arrival;
         public int State { get; set; }
         public int Servers { get; set; }
 
+        public double Arrival
+        {
+            get => this._arrival;
+            set
+            {
+                this._arrival = value;
+                if (value <= 0) return;
+                HasOutsideArrival = true;
+            }
+        }        
         public int Capacity
         {
             get => this._capacity;
@@ -27,19 +37,23 @@ namespace Simulacao_T1
         public double MaxArrival { get; set; }
         public double MinService { get; set; }
         public double MaxService { get; set; }
-        public  LinkedList<Event> EventList = new();
         public  readonly List<double> StateStats = new();
         public bool IsInfinite = true;
-        public string Name { get; set; }
-        
+        public bool HasOutsideArrival = false;
         public Network Connection { get; set; }
+        public int Losses { get; set; }
 
         public void Restart()
         {
-            this.EventList = new();
             this.State = 0;
+            this.Losses = 0;
         }
 
+        public bool HasSpace()
+        {
+            return this.State != this.Capacity || this.IsInfinite;
+        }
+        
         public void IncrStateTime(int index, double time)
         {
             if (StateStats.Count > index)
