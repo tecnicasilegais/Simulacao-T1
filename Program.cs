@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Simulacao_T1
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Queue Simulator");
 
@@ -21,8 +18,9 @@ namespace Simulacao_T1
                 Console.WriteLine("Indicate file to test, must be in data folder");
                 Console.WriteLine("Call example: Simulator.exe model.yml");
             }
+
             TextReader file = new StreamReader($"data/{args[0]}");
-            var deserializer = new DeserializerBuilder()
+            IDeserializer deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
@@ -33,7 +31,7 @@ namespace Simulacao_T1
 
             if (model.Seeds != null) //running using seed
             {
-                foreach (var seed in model.Seeds)
+                foreach (double seed in model.Seeds)
                 {
                     var generator = new RandNumberGenerator(seed);
                     sims.Add(new Simulation(model.Queues, generator.NextNDoubles(model.RndNumbersPerSeed)));
@@ -46,8 +44,8 @@ namespace Simulacao_T1
             }
 
             double elapsedTime = 0;
-            var i = 0;
-            foreach(var sim in sims)
+            int i = 0;
+            foreach (Simulation sim in sims)
             {
                 if (model.Seeds != null)
                 {
@@ -57,14 +55,14 @@ namespace Simulacao_T1
 
                 sim.Simulate();
                 elapsedTime += sim.ElapsedTime;
-                foreach (var q in model.Queues.Values)
+                foreach (Queue q in model.Queues.Values)
                 {
                     q.Restart();
                 }
-                
             }
 
-            var report = new SimulationReport(model.Queues, elapsedTime);
+            int nSimulations = model.Seeds?.Count ?? 1;
+            var report = new SimulationReport(model.Queues, elapsedTime, nSimulations);
 
             Console.WriteLine(report.PrintReport());
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Simulacao_T1
 {
@@ -10,55 +9,68 @@ namespace Simulacao_T1
         private const int C = 1013904223;
         private double _seed;
 
-        public RandNumberGenerator(double seed) => _seed = seed;
-        public RandNumberGenerator() => _seed = 7; //default seed
+        public RandNumberGenerator(double seed)
+        {
+            _seed = seed;
+        }
+
+        public RandNumberGenerator()
+        {
+            _seed = 7; //default seed
+        }
 
         public double NextDouble()
         {
-            _seed = ((A * _seed) + C) % M;
+            _seed = (A * _seed + C) % M;
             return _seed / M;
         }
 
         public LinkedList<double> NextNDoubles(int n)
         {
             var lst = new LinkedList<double>();
-            for (var i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 lst.AddLast(NextDouble());
             }
+
             return lst;
         }
 
         public double NextDouble(double min, double max)
         {
-            return ((max - min) * NextDouble()) + min;
+            return (max - min) * NextDouble() + min;
         }
 
         public LinkedList<double> NextNDoubles(int n, int min, int max)
         {
             var lst = new LinkedList<double>();
-            for (var i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
-                lst.AddLast(((max - min) * NextDouble()) + min);
+                lst.AddLast((max - min) * NextDouble() + min);
             }
+
             return lst;
         }
-        public LinkedList<Decimal> NextNDecimals(int n)
+
+        public LinkedList<decimal> NextNDecimals(int n)
         {
-            var lst = new LinkedList<Decimal>();
-            for (var i = 0; i < n; i++)
+            var lst = new LinkedList<decimal>();
+            for (int i = 0; i < n; i++)
             {
-                lst.AddLast(new Decimal(NextDouble()));
+                lst.AddLast(new decimal(NextDouble()));
             }
+
             return lst;
         }
-        public LinkedList<Decimal> NextNDecimals(int n, int min, int max)
+
+        public LinkedList<decimal> NextNDecimals(int n, int min, int max)
         {
-            var lst = new LinkedList<Decimal>();
-            for (var i = 0; i < n; i++)
+            var lst = new LinkedList<decimal>();
+            for (int i = 0; i < n; i++)
             {
-                lst.AddLast(new Decimal(((max - min) * NextDouble()) + min));
+                lst.AddLast(new decimal((max - min) * NextDouble() + min));
             }
+
             return lst;
         }
     }
