@@ -13,6 +13,9 @@ namespace Simulacao_T1
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Queue Simulator");
+
+
             if (args.Length <= 0)
             {
                 Console.WriteLine("Indicate file to test, must be in data folder");
@@ -25,6 +28,9 @@ namespace Simulacao_T1
 
             var model = deserializer.Deserialize<Model>(file);
             var sims = new List<Simulation>();
+
+            Console.WriteLine("Loading Settings");
+
             if (model.Seeds != null) //running using seed
             {
                 foreach (var seed in model.Seeds)
@@ -39,13 +45,26 @@ namespace Simulacao_T1
                 sims.Add(sim);
             }
 
+            double elapsedTime = 0;
+            var i = 0;
             foreach(var sim in sims)
             {
+                if (model.Seeds != null)
+                {
+                    Console.WriteLine("Running simulation {0} using Seed: {1}", i + 1, model.Seeds[i]);
+                    i++;
+                }
+
                 sim.Simulate();
-                model.Queues.AsParallel().ForAll( q => q.Value.Restart());
+                elapsedTime += sim.ElapsedTime;
+                foreach (var q in model.Queues.Values)
+                {
+                    q.Restart();
+                }
+                
             }
 
-            var report = new SimulationReport(model.Queues);
+            var report = new SimulationReport(model.Queues, elapsedTime);
 
             Console.WriteLine(report.PrintReport());
         }

@@ -14,6 +14,9 @@ namespace Simulacao_T1
         private LinkedList<double> _rndNumbers;
 
         private double _elapsedTime;
+
+        public double ElapsedTime => this._elapsedTime;
+
         private readonly Dictionary<string, Queue> _queues;
         private readonly LinkedList<Event> _eventList;
         public Simulation(Dictionary<string, Queue> queues, LinkedList<double> rndNumbers)
@@ -27,8 +30,11 @@ namespace Simulacao_T1
 
         private void Initialize()
         {
-            _queues.Where(q => q.Value.HasOutsideArrival)
-                .AsParallel().ForAll(q => ScheduleFirstArrival(q.Key, q.Value.Arrival));
+            foreach (var keyValuePair in _queues.Where(q => q.Value.HasOutsideArrival))
+            {
+                ScheduleFirstArrival(keyValuePair.Key, keyValuePair.Value.Arrival);
+            }
+
             void ScheduleFirstArrival(string target, double time)
             {
                 var e = new Event(EventType.Arrival, time, target, null);
@@ -83,10 +89,13 @@ namespace Simulacao_T1
         private void Arrival(string qSource, Tuple<string,Queue> queue, double time)
         {
             var (qName, q) = queue;
-            CountTime(q, time);
+            CountTime(time);
             double aux = -1;
 
-            if (!q.HasSpace()){q.Losses++;} // :( queue is full...
+            if (!q.HasSpace())
+            {
+                q.Losses++;
+            } // :( queue is full...
             else
             {
                 q.State++;
@@ -110,7 +119,7 @@ namespace Simulacao_T1
         private void Exit(Tuple<string,Queue> queue, double time)
         {
             var (qName, q) = queue;
-            CountTime(q, time); 
+            CountTime(time); 
             double aux = -1;
             q.State--;
             if (q.State >= q.Servers)
@@ -140,15 +149,16 @@ namespace Simulacao_T1
             _eventList.SortedInsertion(e);
         }
 
-        private void CountTime(Queue q, double time)
+        private void CountTime(double time)
         {
-
-            int aux = q.State;
-
             double tempoAnterior = _elapsedTime;
             _elapsedTime = time;
             double posTemAux = _elapsedTime - tempoAnterior;
-            q.IncrStateTime(aux, posTemAux);
+
+            foreach (var q in _queues.Values)
+            {
+                q.IncrStateTime(q.State, posTemAux);
+            }
         }
 
         bool ConsumeRandom(ref double aux)

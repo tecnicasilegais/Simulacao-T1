@@ -10,10 +10,10 @@ namespace Simulacao_T1
 
         private Dictionary<string, Queue> queues;
         private double elapsedTime;
-        public SimulationReport(Dictionary<String,Queue> queues)
+        public SimulationReport(Dictionary<String,Queue> queues, double elapsedTime)
         {
             this.queues = queues;
-            elapsedTime = queues.Sum(s => s.Value.StateStats.Sum());
+            this.elapsedTime = elapsedTime;
         }
 
         public String PrintReport()
@@ -22,8 +22,7 @@ namespace Simulacao_T1
             foreach(KeyValuePair<string, Queue> entry in queues)
             {
                 var (k, q) = entry;
-                sb.AppendLine(k);
-                sb.Append($"Queue: G/G/{q.Servers}");
+                sb.Append($"Queue {k}: G/G/{q.Servers}");
                 if (!q.IsInfinite) { sb.AppendLine($"/{q.Capacity}"); }
             sb.AppendLine();
             sb.AppendLine($" State | {"Time",12}{"",8} | {"Probability",11}");
@@ -41,10 +40,5 @@ namespace Simulacao_T1
             return sb.ToString();
         }
 
-        class SimulationData
-        {
-            public Dictionary<string, Queue> Queues{ get; set; }
-            public double ElapsedTime { get; set; }
-        }
     }
 }

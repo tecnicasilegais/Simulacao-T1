@@ -7,14 +7,15 @@ queues:
         maxArrival: 4
         minService: 3
         maxService: 5
-#rndNumbersPerSeed: 100000
 
-#seeds: 
-#- 52
-#- 23
-#- 78
-#- 10
-#- 5
+rndNumbersPerSeed: 100000
+
+seeds: 
+- 52
+- 23
+- 78
+- 10
+- 5
 
 rndNumbers: 
 - 0.3276

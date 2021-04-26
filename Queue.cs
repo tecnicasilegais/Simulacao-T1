@@ -46,7 +46,6 @@ namespace Simulacao_T1
         public void Restart()
         {
             this.State = 0;
-            this.Losses = 0;
         }
 
         public bool HasSpace()
