@@ -47,7 +47,7 @@ namespace Simulacao_T1
                 ProgressBarOnBottom = true
             };
             using var pbar = new ProgressBar(totalTicks, " - simulating queues", options);
-            while (_rndNumbers.Count != 0)
+            while (_rndNumbers.Count != 0 || _eventList.Count != 0)
             {
                 try
                 {
