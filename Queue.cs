@@ -6,6 +6,7 @@ namespace Simulacao_T1
     {
         public readonly List<double> StateStats = new();
         private double _arrival;
+        private List<Network> _conn = new();
         private int _capacity;
         public bool HasOutsideArrival;
         public bool IsInfinite = true;
@@ -50,7 +51,12 @@ namespace Simulacao_T1
         public double MaxArrival { get; set; }
         public double MinService { get; set; }
         public double MaxService { get; set; }
-        public List<Network> Connections { get; set; }
+
+        public List<Network> Connections
+        {
+            get => this._conn;
+            set => this._conn = value;
+        }
         public int Losses { get; set; }
 
         public void Restart()

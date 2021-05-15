@@ -114,7 +114,10 @@ namespace Simulacao_T1
                 }
             }
 
-            if (qSource != null) { return; }
+            if (qSource != null)
+            {
+                return;
+            }
 
             if (ConsumeRandom(ref rnd))
             {
@@ -140,15 +143,28 @@ namespace Simulacao_T1
         private void HandleQueueExit(Tuple<string, Queue> queue, double rnd)
         {
             var (_, q) = queue;
-            if (q.Connections.Count > 0)
-            {
-                string target = null;
+            string target = null;
 
-            }
-            else
+            switch (q.Connections.Count)
             {
-                ScheduleExit(queue, null, rnd);
+                case 0:
+                    ScheduleExit(queue, null, rnd);
+                    break;
+                case 1 when q.Connections[0].Probability == 1:
+                    ScheduleExit(queue,q.Connections[0].Target, rnd);
+                    break;
+                default:
+                {
+                    double rnd2 = -1;
+            
+                    if (!ConsumeRandom(ref rnd2)) return;
+            
+                    target = ChooseRandomTarget(q, rnd2);
+                    ScheduleExit(queue, target, rnd);
+                    break;
+                }
             }
+            
         }
 
         private void ScheduleArrival(string qSource, Tuple<string, Queue> queue, double rnd)
@@ -197,11 +213,21 @@ namespace Simulacao_T1
             return (max - min) * rnd + min;
         }
 
-        private Tuple<string, Queue> ChooseTarget(Queue q, double rnd)
+        private string ChooseRandomTarget(Queue q, double rnd)
         {
-            
-            string tName = q.Connections?.Target;
-            return tName != null ? new Tuple<string, Queue>(tName, _queues[tName]) : null;
+            double acc = 0;
+            string target = null;
+            foreach (var conn in q.Connections)
+            {
+                acc += conn.Probability;
+                if (rnd <= acc)
+                {
+                    target = conn.Target;
+                    break;
+                }
+            }
+
+            return target;
         }
     }
 }

@@ -7,7 +7,7 @@ queues:
         maxArrival: 3
         minService: 2
         maxService: 5
-        connection:
+        connections:
             - target: Q1
               probability: 1.0
     Q1:
