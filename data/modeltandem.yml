@@ -8,8 +8,8 @@ queues:
         minService: 2
         maxService: 5
         connection:
-            target: Q1
-            probability: 1.0
+            - target: Q1
+              probability: 1.0
     Q1:
         servers: 1
         capacity: 3

@@ -50,7 +50,7 @@ namespace Simulacao_T1
         public double MaxArrival { get; set; }
         public double MinService { get; set; }
         public double MaxService { get; set; }
-        public Network Connection { get; set; }
+        public List<Network> Connections { get; set; }
         public int Losses { get; set; }
 
         public void Restart()

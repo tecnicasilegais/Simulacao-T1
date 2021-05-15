@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using ShellProgressBar;
 
 namespace Simulacao_T1
@@ -95,7 +96,7 @@ namespace Simulacao_T1
         {
             (_, Queue q) = queue;
             CountTime(time);
-            double aux = -1;
+            double rnd = -1;
 
             if (!q.HasSpace())
             {
@@ -106,19 +107,18 @@ namespace Simulacao_T1
                 q.State++;
                 if (q.State <= q.Servers)
                 {
-                    if (ConsumeRandom(ref aux))
+                    if (ConsumeRandom(ref rnd))
                     {
-                        Tuple<string, Queue> qt = GetTarget(q);
-                        ScheduleExit(queue, qt?.Item1, aux);
+                        HandleQueueExit(queue, rnd);
                     }
                 }
             }
 
             if (qSource != null) { return; }
 
-            if (ConsumeRandom(ref aux))
+            if (ConsumeRandom(ref rnd))
             {
-                ScheduleArrival(null, queue, aux);
+                ScheduleArrival(null, queue, rnd);
             }
         }
 
@@ -126,30 +126,43 @@ namespace Simulacao_T1
         {
             (_, Queue q) = queue;
             CountTime(time);
-            double aux = -1;
+            double rnd = -1;
             q.State--;
             if (q.State >= q.Servers)
             {
-                if (ConsumeRandom(ref aux))
+                if (ConsumeRandom(ref rnd))
                 {
-                    Tuple<string, Queue> qt = GetTarget(q);
-                    ScheduleExit(queue, qt?.Item1, aux);
+                    HandleQueueExit(queue, rnd);
                 }
             }
         }
 
-        private void ScheduleArrival(string qSource, Tuple<string, Queue> queue, double aux)
+        private void HandleQueueExit(Tuple<string, Queue> queue, double rnd)
+        {
+            var (_, q) = queue;
+            if (q.Connections.Count > 0)
+            {
+                string target = null;
+
+            }
+            else
+            {
+                ScheduleExit(queue, null, rnd);
+            }
+        }
+
+        private void ScheduleArrival(string qSource, Tuple<string, Queue> queue, double rnd)
         {
             (string qName, Queue q) = queue;
-            double result = ElapsedTime + ToInterval(q.MaxArrival, q.MinArrival, aux);
+            double result = ElapsedTime + ToInterval(q.MaxArrival, q.MinArrival, rnd);
             var e = new Event(EventType.Arrival, result, qName, qSource);
             _eventList.SortedInsertion(e);
         }
 
-        private void ScheduleExit(Tuple<string, Queue> qSource, string qTarget, double aux)
+        private void ScheduleExit(Tuple<string, Queue> qSource, string qTarget, double rnd)
         {
             (string qName, Queue q) = qSource;
-            double result = ElapsedTime + ToInterval(q.MaxService, q.MinService, aux);
+            double result = ElapsedTime + ToInterval(q.MaxService, q.MinService, rnd);
 
             var e = new Event(EventType.Departure, result, qTarget, qName);
             _eventList.SortedInsertion(e);
@@ -167,11 +180,11 @@ namespace Simulacao_T1
             }
         }
 
-        private bool ConsumeRandom(ref double aux)
+        private bool ConsumeRandom(ref double rnd)
         {
             if (_rndNumbers.Count > 0)
             {
-                aux = _rndNumbers.First.Value;
+                rnd = _rndNumbers.First.Value;
                 _rndNumbers.RemoveFirst();
                 return true;
             }
@@ -179,14 +192,15 @@ namespace Simulacao_T1
             return false;
         }
 
-        private static double ToInterval(double max, double min, double aux)
+        private static double ToInterval(double max, double min, double rnd)
         {
-            return (max - min) * aux + min;
+            return (max - min) * rnd + min;
         }
 
-        private Tuple<string, Queue> GetTarget(Queue q)
+        private Tuple<string, Queue> ChooseTarget(Queue q, double rnd)
         {
-            string tName = q.Connection?.Target;
+            
+            string tName = q.Connections?.Target;
             return tName != null ? new Tuple<string, Queue>(tName, _queues[tName]) : null;
         }
     }

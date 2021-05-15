@@ -2,7 +2,7 @@
   "profiles": {
     "Simulacao-T1": {
       "commandName": "Project",
-      "commandLineArgs": "modeltandem.yml"
+      "commandLineArgs": "model.yml"
     },
     "SimulacaoNormal": {
       "commandName": "Project",
