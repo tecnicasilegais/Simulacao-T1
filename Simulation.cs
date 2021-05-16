@@ -27,7 +27,7 @@ namespace Simulacao_T1
 
         private void Initialize()
         {
-            foreach (KeyValuePair<string, Queue> keyValuePair in _queues.Where(q => q.Value.HasOutsideArrival))
+            foreach (var keyValuePair in _queues.Where(q => q.Value.HasOutsideArrival))
             {
                 ScheduleFirstArrival(keyValuePair.Key, keyValuePair.Value.Arrival);
             }
@@ -41,7 +41,7 @@ namespace Simulacao_T1
 
         public void Simulate()
         {
-            int totalTicks = _eventList.Count;
+            var totalTicks = _eventList.Count;
             var options = new ProgressBarOptions
             {
                 ProgressCharacter = '─',
@@ -58,7 +58,7 @@ namespace Simulacao_T1
                     {
                         case EventType.Arrival:
                         {
-                            Queue tarQueue = _queues[currEvent.Target];
+                            var tarQueue = _queues[currEvent.Target];
                             _eventList.RemoveFirst();
                             Arrival(currEvent.Source, new(currEvent.Target, tarQueue), currEvent.Time);
                             pbar.Tick();
@@ -66,7 +66,7 @@ namespace Simulacao_T1
                         }
                         case EventType.Departure: // TODO arrival when it comes from another queue
                         {
-                            Queue srcQueue = _queues[currEvent.Source];
+                            var srcQueue = _queues[currEvent.Source];
                             Exit(new(currEvent.Source, srcQueue), currEvent.Time);
                             if (currEvent.Target != null)
                             {
@@ -94,7 +94,7 @@ namespace Simulacao_T1
 
         private void Arrival(string qSource, Tuple<string, Queue> queue, double time)
         {
-            (_, Queue q) = queue;
+            var (_, q) = queue;
             CountTime(time);
             double rnd = -1;
 
@@ -127,23 +127,20 @@ namespace Simulacao_T1
 
         private void Exit(Tuple<string, Queue> queue, double time)
         {
-            (_, Queue q) = queue;
+            var (_, q) = queue;
             CountTime(time);
             double rnd = -1;
             q.State--;
-            if (q.State >= q.Servers)
+            if (q.State < q.Servers) return;
+            if (ConsumeRandom(ref rnd))
             {
-                if (ConsumeRandom(ref rnd))
-                {
-                    HandleQueueExit(queue, rnd);
-                }
+                HandleQueueExit(queue, rnd);
             }
         }
 
         private void HandleQueueExit(Tuple<string, Queue> queue, double rnd)
         {
             var (_, q) = queue;
-            string target = null;
 
             switch (q.Connections.Count)
             {
@@ -159,7 +156,7 @@ namespace Simulacao_T1
             
                     if (!ConsumeRandom(ref rnd2)) return;
             
-                    target = ChooseRandomTarget(q, rnd2);
+                    var target = ChooseRandomTarget(q, rnd2);
                     ScheduleExit(queue, target, rnd);
                     break;
                 }
@@ -169,16 +166,16 @@ namespace Simulacao_T1
 
         private void ScheduleArrival(string qSource, Tuple<string, Queue> queue, double rnd)
         {
-            (string qName, Queue q) = queue;
-            double result = ElapsedTime + ToInterval(q.MaxArrival, q.MinArrival, rnd);
+            var (qName, q) = queue;
+            var result = ElapsedTime + ToInterval(q.MaxArrival, q.MinArrival, rnd);
             var e = new Event(EventType.Arrival, result, qName, qSource);
             _eventList.SortedInsertion(e);
         }
 
         private void ScheduleExit(Tuple<string, Queue> qSource, string qTarget, double rnd)
         {
-            (string qName, Queue q) = qSource;
-            double result = ElapsedTime + ToInterval(q.MaxService, q.MinService, rnd);
+            var (qName, q) = qSource;
+            var result = ElapsedTime + ToInterval(q.MaxService, q.MinService, rnd);
 
             var e = new Event(EventType.Departure, result, qTarget, qName);
             _eventList.SortedInsertion(e);
@@ -186,11 +183,11 @@ namespace Simulacao_T1
 
         private void CountTime(double time)
         {
-            double tempoAnterior = ElapsedTime;
+            var tempoAnterior = ElapsedTime;
             ElapsedTime = time;
-            double posTemAux = ElapsedTime - tempoAnterior;
+            var posTemAux = ElapsedTime - tempoAnterior;
 
-            foreach (Queue q in _queues.Values)
+            foreach (var q in _queues.Values)
             {
                 q.IncrStateTime(q.State, posTemAux);
             }
@@ -198,14 +195,11 @@ namespace Simulacao_T1
 
         private bool ConsumeRandom(ref double rnd)
         {
-            if (_rndNumbers.Count > 0)
-            {
-                rnd = _rndNumbers.First.Value;
-                _rndNumbers.RemoveFirst();
-                return true;
-            }
+            if (_rndNumbers.Count <= 0) return false;
+            rnd = _rndNumbers.First.Value;
+            _rndNumbers.RemoveFirst();
+            return true;
 
-            return false;
         }
 
         private static double ToInterval(double max, double min, double rnd)
@@ -213,18 +207,16 @@ namespace Simulacao_T1
             return (max - min) * rnd + min;
         }
 
-        private string ChooseRandomTarget(Queue q, double rnd)
+        private static string ChooseRandomTarget(Queue q, double rnd)
         {
             double acc = 0;
             string target = null;
             foreach (var conn in q.Connections)
             {
                 acc += conn.Probability;
-                if (rnd <= acc)
-                {
-                    target = conn.Target;
-                    break;
-                }
+                if (!(rnd <= acc)) continue;
+                target = conn.Target;
+                break;
             }
 
             return target;

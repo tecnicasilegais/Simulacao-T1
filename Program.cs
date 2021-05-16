@@ -11,6 +11,7 @@ namespace Simulacao_T1
         private static void Main(string[] args)
         {
             Console.WriteLine("Queue Simulator");
+            Console.WriteLine("Eduardo Andrade, Marcelo Heredia, Michael Rosa");
 
 
             if (args.Length <= 0)
@@ -20,7 +21,7 @@ namespace Simulacao_T1
             }
 
             TextReader file = new StreamReader($"data/{args[0]}");
-            IDeserializer deserializer = new DeserializerBuilder()
+            var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
@@ -31,7 +32,7 @@ namespace Simulacao_T1
 
             if (model.Seeds != null) //running using seed
             {
-                foreach (double seed in model.Seeds)
+                foreach (var seed in model.Seeds)
                 {
                     var generator = new RandNumberGenerator(seed);
                     sims.Add(new Simulation(model.Queues, generator.NextNDoubles(model.RndNumbersPerSeed)));
@@ -44,8 +45,8 @@ namespace Simulacao_T1
             }
 
             double elapsedTime = 0;
-            int i = 0;
-            foreach (Simulation sim in sims)
+            var i = 0;
+            foreach (var sim in sims)
             {
                 if (model.Seeds != null)
                 {
@@ -55,13 +56,13 @@ namespace Simulacao_T1
 
                 sim.Simulate();
                 elapsedTime += sim.ElapsedTime;
-                foreach (Queue q in model.Queues.Values)
+                foreach (var q in model.Queues.Values)
                 {
                     q.Restart();
                 }
             }
 
-            int nSimulations = model.Seeds?.Count ?? 1;
+            var nSimulations = model.Seeds?.Count ?? 1;
             var report = new SimulationReport(model.Queues, elapsedTime, nSimulations);
 
             Console.WriteLine(report.PrintReport());
